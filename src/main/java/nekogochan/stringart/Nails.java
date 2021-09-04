@@ -3,6 +3,7 @@ package nekogochan.stringart;
 import nekogochan.stringart.point.PolarPoint;
 import nekogochan.stringart.point.RectPoint;
 
+import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.DoubleStream;
@@ -22,28 +23,40 @@ public class Nails {
     }
 
     public static Stream<Nail> rect(int count, double width, double height, double radius) {
-        var perimeter = (width + height) * 2.0;
-        var wRatio = width / perimeter;
-        var hRatio = height / perimeter;
 
-        var countOnWidth = (int) (wRatio * count);
-        var countOnHeight = (int) (hRatio * count);
+        var _width = width - radius * 2 - 2;
+        var _height = height - radius * 2 - 2;
+        var offset = new RectPoint(radius + 1, radius + 1);
 
-        var dy = width / countOnWidth;
-        var dx = width / countOnHeight;
+        var perimeter = (_width + _height) * 2.0;
+        var wRatio = _width / perimeter;
 
-        var d = min(dx, dy);
+        var countOnWidth = (int) (wRatio * count) - 1;
+        var countOnHeight = count / 2 - countOnWidth - 2;
 
-        Supplier<DoubleStream> xAxis = () -> DoubleStream.iterate(0.0, (y) -> y + d).limit(countOnWidth);
-        Supplier<DoubleStream> yAxis = () -> DoubleStream.iterate(0.0, (x) -> x + d).limit(countOnHeight);
+        var dw = _width / (double) (countOnWidth + 1);
+        var dh = _height / (double) (countOnHeight + 1);
 
-        var top = xAxis.get().mapToObj((x) -> new RectPoint(x, 0.0));
-        var bottom = xAxis.get().mapToObj((x) -> new RectPoint(x + d, height));
-        var left = yAxis.get().mapToObj((y) -> new RectPoint(0.0, y + d));
-        var right = yAxis.get().mapToObj((y) -> new RectPoint(width, y));
+        Supplier<DoubleStream> xAxis = () -> DoubleStream.iterate(dw, (x) -> x + dw).limit(countOnWidth);
+        Supplier<DoubleStream> yAxis = () -> DoubleStream.iterate(dh, (y) -> y + dh).limit(countOnHeight);
 
-        return Stream.of(top, bottom, left, right)
+        var top = xAxis.get().mapToObj((x) -> rp(x, 0.0));
+        var bottom = xAxis.get().mapToObj((x) -> rp(x, _height));
+        var left = yAxis.get().mapToObj((y) -> rp(0.0, y));
+        var right = yAxis.get().mapToObj((y) -> rp(_width, y));
+        var angles = Stream.of(
+            rp(0.0, 0.0),
+            rp(0.0, _height),
+            rp(_width, 0.0),
+            rp(_width, _height)
+        );
+
+        return Stream.of(top, bottom, left, right, angles)
             .flatMap(Function.identity())
-            .map((p) -> new Nail(p, radius));
+            .map((p) -> new Nail(p.add(offset), radius));
+    }
+
+    private static RectPoint rp(double x, double y) {
+        return new RectPoint(x, y);
     }
 }

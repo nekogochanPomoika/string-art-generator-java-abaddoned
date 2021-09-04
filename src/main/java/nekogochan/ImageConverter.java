@@ -1,56 +1,72 @@
 package nekogochan;
 
+import lombok.SneakyThrows;
 import nekogochan.stringart.Fn;
 
 import javax.imageio.ImageIO;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class ImageConverter {
 
-    private final int size;
+    private final int width;
+    private final int height;
 
-    public ImageConverter(int size) {
-        this.size = size;
+    public ImageConverter(int width, int height) {
+        this.width = width;
+        this.height = height;
     }
 
-    public FieldData convert(String path) {
-        try {
-            var img = ImageIO.read(new File(path));
-            var w = img.getWidth();
-            var h = img.getHeight();
+    @SneakyThrows
+    public FieldData convert(BufferedImage sourceImg) {
+        var scaledImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-            var minSide = min(w, h);
-            var scaleFactor = (double) size / (double) minSide;
+        var sw = sourceImg.getWidth();
+        var sh = sourceImg.getHeight();
 
-            w *= scaleFactor;
-            h *= scaleFactor;
+        var wRatio = (double) width / (double) sw;
+        var hRatio = (double) height / (double) sh;
 
-            var wOffset = (size - w) / 2;
-            var hOffset = (size - h) / 2;
+        var mainRatio = min(wRatio, hRatio);
 
-            var scaledImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-            var graphics = scaledImg.createGraphics();
+        int sx1, sy1, sx2, sy2;
 
-            graphics.drawImage(img.getScaledInstance(w, h, Image.SCALE_SMOOTH), wOffset, hOffset, size, size, null);
-            graphics.dispose();
-
-            var result = new double[size][size];
-
-            Fn.repeat(size, (x) -> {
-                Fn.repeat(size, (y) -> {
-                    var rgb = new RGB(scaledImg.getRGB(x, y));
-                    result[x][y] = 1.0 - (double) (rgb.r + rgb.g + rgb.b) / 765.0;
-                });
-            });
-
-            return new FieldData(result);
-        } catch (Exception ignored) {
-            throw new RuntimeException("ИДА НУ И ХУЙНЯ С ИЗОБРАЖЕНИЕМ: " + path);
+        if (wRatio > hRatio) {
+            sy1 = 0;
+            sy2 = sh;
+            var swProjection = width / mainRatio;
+            var sProjectionDw = (sw - swProjection) / 2;
+            sx1 = (int) (sProjectionDw);
+            sx2 = (int) (sw - sProjectionDw);
+        } else {
+            sx1 = 0;
+            sx2 = sw;
+            var shProjection = height / mainRatio;
+            var sProjectionDh = (sh - shProjection) / 2;
+            sy1 = (int) (sProjectionDh);
+            sy2 = (int) (sh - sProjectionDh);
         }
+
+        var graphics = scaledImg.getGraphics();
+        graphics.drawImage(sourceImg, 0, 0, width, height,
+                           sx1, sy1, sx2, sy2, null);
+
+        var result = new double[width][height];
+
+        Fn.repeat(width, (x) -> {
+            Fn.repeat(height, (y) -> {
+                var rgb = new RGB(scaledImg.getRGB(x, y));
+                result[x][y] = 1.0 - (double) (rgb.r + rgb.g + rgb.b) / 765.0;
+            });
+        });
+
+        return new FieldData(result);
     }
 
     private static class RGB {
