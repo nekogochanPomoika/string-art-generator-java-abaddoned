@@ -1,59 +1,70 @@
 package nekogochan.point;
 
-import nekogochan.fn.DoubleBiPredicate;
-
-import java.util.stream.Stream;
-
-import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
-public class RectPoint extends Vec2<RectPoint> {
-    private RectPoint(double x, double y) {
-        super(x, y);
-    }
+public class RectPoint implements M_VecDouble<RectPoint> {
 
-    public static RectPoint of(double x, double y) {
-        return new RectPoint(x, y);
-    }
+  private double x;
+  private double y;
 
-    public RectPoint copy() {
-        return of(x(), y());
-    }
+  public double x() {
+    return x;
+  }
 
-    public PolarPoint toPolar() {
-        return PolarPoint.of(
-            sqrt(pow(x(), 2) + pow(y(), 2)),
-            atan2(y(), x())
-        );
-    }
+  public RectPoint x(double x) {
+    this.x = x;
+    return this;
+  }
 
-    public Stream<RectPoint> pathTo(RectPoint target) {
-        var dxy = this.copy().subtract(this);
+  public double y() {
+    return y;
+  }
 
-        double dx, dy;
+  public RectPoint y(double y) {
+    this.y = y;
+    return this;
+  }
 
-        DoubleBiPredicate whilePredicate;
+  public RectPoint(double x, double y) {
+    x(x);
+    y(y);
+  }
 
-        if (abs(dxy.y()) > abs(dxy.x())) {
-            dy = dxy.y() > 0 ? 1 : -1;
-            dx = dxy.x() / abs(dxy.y());
-            whilePredicate = dxy.y() > 0
-                             ? (_x, _y) -> _y < target.y()
-                             : (_x, _y) -> _y > target.y();
-        } else {
-            dx = dxy.x() > 0 ? 1 : -1;
-            dy = dxy.y() / abs(dxy.x());
-            whilePredicate = dxy.x() > 0
-                             ? (_x, _y) -> _x < target.x()
-                             : (_x, _y) -> _x > target.x();
-        }
+  public PolarPoint toPolar() {
+    return new PolarPoint(
+        sqrt(pow(x(), 2) + pow(y(), 2)),
+        atan2(y(), x())
+    );
+  }
 
-        return Stream.iterate(
-            RectPoint.of(x(), y()),
-            (rp) -> whilePredicate.test(rp.x(), rp.y()),
-            (rp) -> rp.add(dx, dy)
-        );
-    }
+  public RectPointInt toInt() {
+    return new RectPointInt((int) x,
+                            (int) y);
+  }
+
+  @Override
+  public double _1() {
+    return x();
+  }
+
+  @Override
+  public double _2() {
+    return y();
+  }
+
+  @Override
+  public void _1(double _1) {
+    x(_1);
+  }
+
+  @Override
+  public void _2(double _2) {
+    y(_2);
+  }
+
+  public RectPoint copy() {
+    return new RectPoint(x(), y());
+  }
 }

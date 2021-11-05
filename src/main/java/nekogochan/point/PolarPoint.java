@@ -3,27 +3,63 @@ package nekogochan.point;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class PolarPoint extends Vec2<PolarPoint> {
-    private PolarPoint(double r, double a) {
-        super(r, a);
-    }
+public class PolarPoint implements M_VecDouble<PolarPoint> {
 
-    public static PolarPoint of(double r, double a) {
-        return new PolarPoint(r, a);
-    }
+  private double r;
+  private double a;
 
-    public double r() {
-        return _x;
-    }
+  public PolarPoint(double r, double a) {
+    this.r = r;
+    this.a = a;
+  }
 
-    public double a() {
-        return _y;
-    }
+  public PolarPoint r(double r) {
+    this.r = r;
+    return this;
+  }
 
-    public RectPoint toRect() {
-        return RectPoint.of(
-            cos(a() * r()),
-            sin(a() * r())
-        );
-    }
+  public PolarPoint a(double a) {
+    this.a = a;
+    return this;
+  }
+
+  public PolarPoint aAdd(double a) {
+    this.a += a;
+    return this;
+  }
+
+  public double r() {
+    return r;
+  }
+
+  public double a() {
+    return a;
+  }
+
+  public RectPoint toRect() {
+    return new RectPoint(
+        cos(a()) * r(),
+        sin(a()) * r()
+    );
+  }
+
+  @Override
+  public double _1() {
+    return a();
+  }
+
+  @Override
+  public double _2() {
+    return r();
+  }
+
+  @Override
+  public void _1(double _1) {
+    a(_1);
+  }
+
+  @Override
+  public void _2(double _2) {
+    r(_2);
+  }
 }
