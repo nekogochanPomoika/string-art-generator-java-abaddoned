@@ -4,26 +4,23 @@ import static java.lang.Math.atan2;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
-public class RectPoint implements M_VecDouble<RectPoint> {
-
-  private double x;
-  private double y;
+public class RectPoint extends VecDouble<RectPoint> {
 
   public double x() {
-    return x;
+    return _1;
   }
 
   public RectPoint x(double x) {
-    this.x = x;
+    this._1 = x;
     return this;
   }
 
   public double y() {
-    return y;
+    return _2;
   }
 
   public RectPoint y(double y) {
-    this.y = y;
+    this._2 = y;
     return this;
   }
 
@@ -40,30 +37,9 @@ public class RectPoint implements M_VecDouble<RectPoint> {
   }
 
   public RectPointInt toInt() {
-    return new RectPointInt((int) x,
-                            (int) y);
+    return new RectPointInt((int) x(),
+                            (int) y());
   }
-
-  @Override
-  public double _1() {
-    return x();
-  }
-
-  @Override
-  public double _2() {
-    return y();
-  }
-
-  @Override
-  public void _1(double _1) {
-    x(_1);
-  }
-
-  @Override
-  public void _2(double _2) {
-    y(_2);
-  }
-
   public RectPoint copy() {
     return new RectPoint(x(), y());
   }

@@ -2,10 +2,10 @@ package nekogochan.stringart;
 
 import nekogochan.fn.Unchecked;
 import nekogochan.fn.ref.IntRef;
-import nekogochan.point.Pair;
 import nekogochan.point.RectPointInt;
-import nekogochan.stringart.binds.BindedNailI;
+import nekogochan.stringart.binds.BindNailI;
 import nekogochan.stringart.nail.NailI;
+import nekogochan.stringart.pair.PairI;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,13 +19,13 @@ import java.util.concurrent.Future;
 public class StringArt {
 
   private final double[][] field;
-  private final List<BindedNailI> nails;
+  private final List<BindNailI> nails;
   private final double removeValue;
-  private final Map<BindedNailI, Integer> indexes;
+  private final Map<BindNailI, Integer> indexes;
   private final ExecutorService executorService =
     Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-  public StringArt(double[][] field, List<BindedNailI> nails, double removeValue) {
+  public StringArt(double[][] field, List<BindNailI> nails, double removeValue) {
     this.field = field;
     this.nails = nails;
     this.removeValue = removeValue;
@@ -42,14 +42,19 @@ public class StringArt {
     var from = nails.get(fromIdx);
     var iterationsResult = new ArrayList<Future<IterationResult>>();
 
-    from.getBinds()
-        .forEach($ -> {
-          iterationsResult.add(executorService.submit(() -> iterate($, false)));
-          iterationsResult.add(executorService.submit(() -> iterate($, true)));
-        });
+    from.accessibleBoth().forEach(n -> {
+      iterationsResult.add(executorService.submit(() -> iterateLeft(n)));
+      iterationsResult.add(executorService.submit(() -> iterateRight(n)));
+    });
+
+    if (fromLeft) {
+      from.accessibleLeft().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateLeft(n))));
+    } else {
+      from.accessibleRight().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateRight(n))));
+    }
 
     var result = iterationsResult.stream()
-                                 .map($ -> Unchecked.call($::get))
+                                 .map(f -> Unchecked.call(f::get))
                                  .max(Comparator.comparingDouble(IterationResult::val))
                                  .orElseThrow();
 
@@ -59,6 +64,14 @@ public class StringArt {
     fromIdx = indexes.get(result.target);
     fromLeft = result.left;
     return new NextResult(look, fromIdx);
+  }
+
+  private IterationResult iterateLeft(NailI to) {
+    return iterate(to, true);
+  }
+
+  private IterationResult iterateRight(NailI to) {
+    return iterate(to, false);
   }
 
   private IterationResult iterate(NailI to, boolean toLeft) {
@@ -81,6 +94,6 @@ public class StringArt {
   private record IterationResult(NailI target, boolean left, double val) {
   }
 
-  public record NextResult(Pair pair, int idx) {
+  public record NextResult(PairI pair, int idx) {
   }
 }

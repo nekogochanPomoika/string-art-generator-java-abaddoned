@@ -1,10 +1,8 @@
 package nekogochan.stringart.nail;
 
-import nekogochan.point.Pair;
+import nekogochan.stringart.pair.Pair;
 import nekogochan.point.RectPoint;
-import nekogochan.point.RectPointInt;
-
-import java.util.stream.Stream;
+import nekogochan.stringart.pair.PairI;
 
 import static java.lang.Math.PI;
 
@@ -25,7 +23,7 @@ public class Nail implements NailI {
     return radius;
   }
 
-  public Pair lookTo(NailI nail, boolean fromLeft, boolean toLeft) {
+  public PairI lookTo(NailI nail, boolean fromLeft, boolean toLeft) {
     var fromC = this.center();
     var toC = nail.center();
 

@@ -9,10 +9,7 @@ import java.util.stream.Stream;
 import static java.lang.Math.abs;
 import static java.lang.Math.round;
 
-public class RectPointInt implements M_VecInt<RectPointInt> {
-
-  private int x;
-  private int y;
+public class RectPointInt extends VecInt<RectPointInt> {
 
   public RectPointInt(int x, int y) {
     x(x);
@@ -20,27 +17,28 @@ public class RectPointInt implements M_VecInt<RectPointInt> {
   }
 
   public int x() {
-    return x;
+    return _1;
   }
 
   public RectPointInt x(int x) {
-    this.x = x;
+    this._1 = x;
     return this;
   }
 
   public int y() {
-    return y;
+    return _2;
   }
 
   public RectPointInt y(int y) {
-    this.y = y;
+    this._2 = y;
     return this;
   }
 
   public RectPoint toDouble() {
-    return new RectPoint(x, y);
+    return new RectPoint(x(), y());
   }
 
+  @SuppressWarnings("DuplicatedCode")
   public Stream<RectPointInt> pathTo(RectPointInt target) {
     var dxy = target.copy()
                     .subtract(this)
@@ -57,10 +55,10 @@ public class RectPointInt implements M_VecInt<RectPointInt> {
       secondaryCoord = new DoubleRef(x());
       secondaryCoordStep = dxy.x() / abs(dxy.y());
       if (dxy.y() > 0) {
-        predicate = () -> point.y <= target.y;
+        predicate = () -> point.y() <= target.y();
         mainCoordStep = 1;
       } else {
-        predicate = () -> point.y >= target.y;
+        predicate = () -> point.y() >= target.y();
         mainCoordStep = -1;
       }
       nextOperator = (rp) -> {
@@ -73,10 +71,10 @@ public class RectPointInt implements M_VecInt<RectPointInt> {
       secondaryCoord = new DoubleRef(y());
       secondaryCoordStep = dxy.y() / abs(dxy.x());
       if (dxy.x() > 0) {
-        predicate = () -> point.x <= target.x;
+        predicate = () -> point.x() <= target.x();
         mainCoordStep = 1;
       } else {
-        predicate = () -> point.x >= target.x;
+        predicate = () -> point.x() >= target.x();
         mainCoordStep = -1;
       }
       nextOperator = (rp) -> {
@@ -93,25 +91,5 @@ public class RectPointInt implements M_VecInt<RectPointInt> {
 
   public RectPointInt copy() {
     return new RectPointInt(x(), y());
-  }
-
-  @Override
-  public int _1() {
-    return x();
-  }
-
-  @Override
-  public int _2() {
-    return y();
-  }
-
-  @Override
-  public void _1(int _1) {
-    x(_1);
-  }
-
-  @Override
-  public void _2(int _2) {
-    y(_2);
   }
 }

@@ -1,10 +1,10 @@
 package nekogochan;
 
-import nekogochan.point.Pair;
 import nekogochan.point.RectPoint;
-import nekogochan.stringart.binds.BindedNailI;
+import nekogochan.stringart.binds.BindNailI;
 import nekogochan.stringart.nail.Nail;
 import nekogochan.stringart.nail.NailI;
+import nekogochan.stringart.pair.PairI;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,42 +15,71 @@ import java.util.stream.Stream;
 
 public class BindsRect {
 
-  private final List<BindedNailI>
-    left = new ArrayList<>(),
-    top = new ArrayList<>(),
-    right = new ArrayList<>(),
-    bottom = new ArrayList<>();
+  private final List<BindNailI> left, top, right, bottom;
 
-  public BindsRect(List<? extends NailI> left, List<? extends NailI> top, List<? extends NailI> right, List<? extends NailI> bottom) {
-    left.stream().map($ -> new _Nail(Side.LEFT, $)).forEach(this.left::add);
-    top.stream().map($ -> new _Nail(Side.TOP, $)).forEach(this.top::add);
-    right.stream().map($ -> new _Nail(Side.RIGHT, $)).forEach(this.right::add);
-    bottom.stream().map($ -> new _Nail(Side.BOTTOM, $)).forEach(this.bottom::add);
+  public BindsRect(List<? extends NailI> left,
+                   List<? extends NailI> top,
+                   List<? extends NailI> right,
+                   List<? extends NailI> bottom) {
+    var _left = left.stream().map(_Nail::new).toList();
+    var _top = top.stream().map(_Nail::new).toList();
+    var _right = right.stream().map(_Nail::new).toList();
+    var _bottom = bottom.stream().map(_Nail::new).toList();
+    this.left = new ArrayList<>(_left);
+    this.top = new ArrayList<>(_top);
+    this.right = new ArrayList<>(_right);
+    this.bottom = new ArrayList<>(_bottom);
+    _left.forEach($ -> $.init(Side.LEFT));
+    _top.forEach($ -> $.init(Side.TOP));
+    _right.forEach($ -> $.init(Side.RIGHT));
+    _bottom.forEach($ -> $.init(Side.BOTTOM));
   }
 
-  public List<BindedNailI> nails() {
+  public List<BindNailI> nails() {
     return Stream.of(left, top, right, bottom)
                  .flatMap(Collection::stream)
                  .toList();
   }
 
-  public class _Nail implements BindedNailI {
-    private final List<List<BindedNailI>> boundSides;
+  public class _Nail implements BindNailI {
+    private List<BindNailI> accessibleLeft;
+    private List<BindNailI> accessibleRight;
+    private List<BindNailI> accessibleBoth;
+
     private final NailI nail;
 
-    public _Nail(Side side, NailI nail) {
+    public _Nail(NailI nail) {
       this.nail = nail;
-      this.boundSides = (switch (side) {
-        case LEFT -> Stream.of(top, right, bottom);
-        case TOP -> Stream.of(left, right, bottom);
-        case RIGHT -> Stream.of(left, top, bottom);
-        case BOTTOM -> Stream.of(left, top, right);
-      }).toList();
+    }
+
+    private void init(Side side) {
+      accessibleLeft = nailsBySide(side.prev());
+      accessibleRight = nailsBySide(side.next());
+      accessibleBoth = nailsBySide(side.opposite());
+    }
+
+    private List<BindNailI> nailsBySide(Side side) {
+      return switch (side) {
+        case RIGHT -> right;
+        case TOP -> top;
+        case LEFT -> left;
+        case BOTTOM -> bottom;
+      };
     }
 
     @Override
-    public Stream<? extends NailI> getBinds() {
-      return boundSides.stream().flatMap(Collection::stream);
+    public List<? extends NailI> accessibleLeft() {
+      return accessibleLeft;
+    }
+
+    @Override
+    public List<? extends NailI> accessibleRight() {
+      return accessibleRight;
+    }
+
+    @Override
+    public List<? extends NailI> accessibleBoth() {
+      return accessibleBoth;
     }
 
     @Override
@@ -64,13 +93,41 @@ public class BindsRect {
     }
 
     @Override
-    public Pair lookTo(NailI nail, boolean fromLeft, boolean toLeft) {
+    public PairI lookTo(NailI nail, boolean fromLeft, boolean toLeft) {
       return this.nail.lookTo(nail, fromLeft, toLeft);
     }
   }
 
   public enum Side {
-    LEFT, TOP, RIGHT, BOTTOM
+    LEFT(0), TOP(1), RIGHT(2), BOTTOM(3);
+
+    private final int idx;
+
+    Side(int idx) {
+      this.idx = idx;
+    }
+
+    static Side fromIdx(int idx) {
+      return switch (idx) {
+        case 0 -> LEFT;
+        case 1 -> TOP;
+        case 2 -> RIGHT;
+        case 3 -> BOTTOM;
+        default -> throw new IllegalStateException("Unexpected value: " + idx);
+      };
+    }
+
+    Side next() {
+      return fromIdx((idx + 1) % 4);
+    }
+
+    Side prev() {
+      return fromIdx((idx + 3) % 4);
+    }
+
+    Side opposite() {
+      return fromIdx((idx + 2) % 4);
+    }
   }
 
   static BindsRect generate(int count, double width, double height, double radius) {
@@ -99,6 +156,6 @@ public class BindsRect {
   }
 
   private static NailI nail(double x, double y, double radius) {
-    return (new Nail(new RectPoint(x, y), radius));
+    return new Nail(new RectPoint(x, y), radius);
   }
 }

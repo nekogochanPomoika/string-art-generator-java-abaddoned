@@ -1,10 +1,10 @@
 package nekogochan.stringart.nail;
 
-import nekogochan.point.Pair;
 import nekogochan.point.RectPoint;
+import nekogochan.stringart.pair.PairI;
 
 public interface NailI {
   RectPoint center();
   double radius();
-  Pair lookTo(NailI nail, boolean fromLeft, boolean toLeft);
+  PairI lookTo(NailI nail, boolean fromLeft, boolean toLeft);
 }

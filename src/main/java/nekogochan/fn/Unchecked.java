@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
 
 public class Unchecked {
   @FunctionalInterface
-  interface SilentInvoker {
+  private interface SilentInvoker {
     MethodType SIGNATURE = MethodType.methodType(Object.class, Callable.class);//сигнатура метода INVOKE
     <V> V invoke(final Callable<V> callable);
   }
@@ -27,7 +27,7 @@ public class Unchecked {
                                                           SilentInvoker.SIGNATURE);
       si = (SilentInvoker) site.getTarget().invokeExact();
     } catch (Throwable e) {
-      System.exit(-1);
+      throw new Error();
     }
     SILENT_INVOKER = si;
   }

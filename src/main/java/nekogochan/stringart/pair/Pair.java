@@ -1,6 +1,7 @@
-package nekogochan.point;
+package nekogochan.stringart.pair;
 
 import nekogochan.fn.ref.DoubleRef;
+import nekogochan.point.RectPointInt;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.UnaryOperator;
@@ -9,7 +10,15 @@ import java.util.stream.Stream;
 import static java.lang.Math.abs;
 import static java.lang.Math.round;
 
-public record Pair(RectPointInt from, RectPointInt to) {
+public class Pair implements PairI {
+  private final RectPointInt from;
+  private final RectPointInt to;
+
+  public Pair(RectPointInt from, RectPointInt to) {
+    this.from = from;
+    this.to = to;
+  }
+
   public Stream<RectPointInt> path() {
     var dxy = to.copy()
                 .subtract(from)
@@ -58,5 +67,13 @@ public record Pair(RectPointInt from, RectPointInt to) {
 
     secondaryCoord.set(round(secondaryCoord.get()));
     return Stream.iterate(point, ($) -> predicate.getAsBoolean(), nextOperator);
+  }
+
+  public RectPointInt from() {
+    return from;
+  }
+
+  public RectPointInt to() {
+    return to;
   }
 }
