@@ -1,11 +1,11 @@
 package nekogochan.stringart;
 
+import nekogochan.stringart.binds.BindNail;
 import nekogochan.stringart.fn.Unchecked;
 import nekogochan.stringart.fn.ref.IntRef;
+import nekogochan.stringart.nail.Nail;
+import nekogochan.stringart.pair.Pair;
 import nekogochan.stringart.point.RectPointInt;
-import nekogochan.stringart.binds.BindNailI;
-import nekogochan.stringart.nail.NailI;
-import nekogochan.stringart.pair.PairI;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,13 +19,13 @@ import java.util.concurrent.Future;
 public class StringArt {
 
   private final double[][] field;
-  private final List<BindNailI> nails;
+  private final List<BindNail> nails;
   private final double removeValue;
-  private final Map<BindNailI, Integer> indexes;
+  private final Map<BindNail, Integer> indexes;
   private final ExecutorService executorService =
     Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-  public StringArt(double[][] field, List<BindNailI> nails, double removeValue) {
+  public StringArt(double[][] field, List<BindNail> nails, double removeValue) {
     this.field = field;
     this.nails = nails;
     this.removeValue = removeValue;
@@ -42,15 +42,12 @@ public class StringArt {
     var from = nails.get(fromIdx);
     var iterationsResult = new ArrayList<Future<IterationResult>>();
 
-    from.accessibleBoth().forEach(n -> {
-      iterationsResult.add(executorService.submit(() -> iterateLeft(n)));
-      iterationsResult.add(executorService.submit(() -> iterateRight(n)));
-    });
-
     if (fromLeft) {
-      from.accessibleLeft().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateLeft(n))));
+      from.leftToLeft().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateLeft(n))));
+      from.leftToRight().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateRight(n))));
     } else {
-      from.accessibleRight().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateRight(n))));
+      from.rightToLeft().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateLeft(n))));
+      from.rightToRight().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateRight(n))));
     }
 
     var result = iterationsResult.stream()
@@ -66,15 +63,15 @@ public class StringArt {
     return new NextResult(look, fromIdx);
   }
 
-  private IterationResult iterateLeft(NailI to) {
+  private IterationResult iterateLeft(Nail to) {
     return iterate(to, true);
   }
 
-  private IterationResult iterateRight(NailI to) {
+  private IterationResult iterateRight(Nail to) {
     return iterate(to, false);
   }
 
-  private IterationResult iterate(NailI to, boolean toLeft) {
+  private IterationResult iterate(Nail to, boolean toLeft) {
     var from = nails.get(fromIdx);
     var count = new IntRef(0);
     var sum = from.lookTo(to, fromLeft, toLeft)
@@ -91,9 +88,9 @@ public class StringArt {
     return field[point.x()][point.y()];
   }
 
-  private record IterationResult(NailI target, boolean left, double val) {
+  private record IterationResult(Nail target, boolean left, double val) {
   }
 
-  public record NextResult(PairI pair, int idx) {
+  public record NextResult(Pair pair, int idx) {
   }
 }

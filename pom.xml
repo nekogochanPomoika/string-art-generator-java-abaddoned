@@ -61,7 +61,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
-                            <mainClass>nekogochan.stringart.Main</mainClass>
+                            <mainClass>nekogochan.stringart.usagelocal.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

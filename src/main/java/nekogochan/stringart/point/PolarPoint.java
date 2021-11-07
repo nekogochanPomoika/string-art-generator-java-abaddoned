@@ -33,6 +33,10 @@ public class PolarPoint extends VecDouble<PolarPoint> {
     return this;
   }
 
+  public PolarPoint copy() {
+    return new PolarPoint(r(), a());
+  }
+
   public RectPoint toRect() {
     return new RectPoint(
         cos(a()) * r(),
