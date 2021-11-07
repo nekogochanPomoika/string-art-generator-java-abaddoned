@@ -1,6 +1,6 @@
 package nekogochan.stringart.pair;
 
-import nekogochan.point.RectPointInt;
+import nekogochan.stringart.point.RectPointInt;
 
 import java.util.stream.Stream;
 

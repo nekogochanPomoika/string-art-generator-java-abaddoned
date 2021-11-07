@@ -1,7 +1,7 @@
 package nekogochan.stringart.nail;
 
 import nekogochan.stringart.pair.Pair;
-import nekogochan.point.RectPoint;
+import nekogochan.stringart.point.RectPoint;
 import nekogochan.stringart.pair.PairI;
 
 import static java.lang.Math.PI;

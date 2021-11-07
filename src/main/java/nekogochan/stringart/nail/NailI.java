@@ -1,6 +1,6 @@
 package nekogochan.stringart.nail;
 
-import nekogochan.point.RectPoint;
+import nekogochan.stringart.point.RectPoint;
 import nekogochan.stringart.pair.PairI;
 
 public interface NailI {

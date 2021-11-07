@@ -1,8 +1,8 @@
 package nekogochan.stringart;
 
-import nekogochan.fn.Unchecked;
-import nekogochan.fn.ref.IntRef;
-import nekogochan.point.RectPointInt;
+import nekogochan.stringart.fn.Unchecked;
+import nekogochan.stringart.fn.ref.IntRef;
+import nekogochan.stringart.point.RectPointInt;
 import nekogochan.stringart.binds.BindNailI;
 import nekogochan.stringart.nail.NailI;
 import nekogochan.stringart.pair.PairI;
