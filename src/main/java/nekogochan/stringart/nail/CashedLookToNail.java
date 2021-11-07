@@ -4,8 +4,8 @@ import nekogochan.stringart.fn.container.IfElse;
 import nekogochan.stringart.pair.Pair;
 import nekogochan.stringart.point.RectPoint;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 public class CashedLookToNail implements Nail {
   private final Nail it;
@@ -24,7 +24,7 @@ public class CashedLookToNail implements Nail {
     return it.radius();
   }
 
-  Map<Nail, IfElse<IfElse<Pair>>> cash = new WeakHashMap<>();
+  Map<Nail, IfElse<IfElse<Pair>>> cash = new HashMap<>();
 
   @Override
   public Pair lookTo(Nail nail, boolean fromLeft, boolean toLeft) {

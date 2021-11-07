@@ -1,26 +1,25 @@
 package nekogochan.stringart.binds;
 
+import nekogochan.stringart.fn.Unchecked;
 import nekogochan.stringart.nail.Nail;
 import nekogochan.stringart.pair.Pair;
 import nekogochan.stringart.point.RectPoint;
 import nekogochan.stringart.point.RectPointInt;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import static nekogochan.stringart.fn.Fn.noneSame;
 
 /**
- * free - means there's no barrier (another nail) from a to b
+ * пиздец какая медленная хуйня, т.к. проверяет все гвозди со всеми
+ * время n^2 от количества гвоздей * n от размера поля
+ * на размер поля 500 на 500 и 240 гвоздями по периметру занимет 5.5 минут
  */
 public class BindsAllFree {
   private final List<BindNail> nails;
-
-  private final int[]
-    leftToLeft,
-    leftToRight,
-    rightToLeft,
-    rightToRight;
 
   public List<BindNail> nails() {
     return nails;
@@ -31,17 +30,14 @@ public class BindsAllFree {
     var _nails = nails.stream()
                       .map(_Nail::new)
                       .toList();
-
     this.nails = (List<BindNail>) (List) _nails;
-
-    leftToLeft = takeIndexesWhereFree(true, true);
-    leftToRight = takeIndexesWhereFree(true, false);
-    rightToLeft = takeIndexesWhereFree(false, true);
-    rightToRight = takeIndexesWhereFree(false, false);
-
+    var es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    var tasks = new ArrayList<Future>();
     for (int i = 0; i < _nails.size(); i++) {
-      _nails.get(i).init(i);
+      int _i = i;
+      tasks.add(es.submit(() -> _nails.get(_i).init(_i)));
     }
+    tasks.forEach(t -> Unchecked.call(t::get));
   }
 
   private boolean isIn(RectPointInt p, Nail nail) {
@@ -50,20 +46,19 @@ public class BindsAllFree {
                       p.y() - c.y()) <= nail.radius();
   }
 
-  private boolean hasBarrier(int idx, boolean fromLeft, boolean toLeft) {
-    return nails.get(0).lookTo(nails.get(idx), fromLeft, toLeft)
-                .path()
-                .anyMatch(p -> IntStream.range(1, nails.size())
-                                        .filter(i -> i != idx)
-                                        .mapToObj(nails::get)
-                                        .anyMatch(n -> isIn(p, n)));
+  private boolean isFree(Nail from, Nail to, boolean fromLeft, boolean toLeft) {
+    return nails.stream()
+                .filter(n -> noneSame(n, from, to))
+                .noneMatch(n -> from.lookTo(to, fromLeft, toLeft).path()
+                                    .anyMatch(p -> isIn(p, n)));
   }
 
-  // TODO (07.11.2021): fix the shit bug
-  private int[] takeIndexesWhereFree(boolean fromLeft, boolean toLeft) {
-    return IntStream.range(1, nails.size())
-                    .filter(i -> !hasBarrier(i, fromLeft, toLeft))
-                    .toArray();
+  private List<? extends Nail> takeWhereFree(int idx, boolean fromLeft, boolean toLeft) {
+    var root = nails.get(idx);
+    return nails.stream()
+                .filter(n -> n != root)
+                .filter(n -> isFree(root, n, fromLeft, toLeft))
+                .toList();
   }
 
   private class _Nail implements BindNail {
@@ -80,18 +75,13 @@ public class BindsAllFree {
       this.it = it;
     }
 
+    @SuppressWarnings("unchecked")
     private void init(int idx) {
-      this._leftToLeft = getSequence(idx, leftToLeft);
-      this._leftToRight = getSequence(idx, leftToRight);
-      this._rightToLeft = getSequence(idx, rightToLeft);
-      this._rightToRight = getSequence(idx, rightToRight);
-    }
-
-    private List<Nail> getSequence(int idx, int[] availableNailsIndexes) {
-      return Arrays.stream(availableNailsIndexes)
-                   .map(i -> (i + idx) % nails.size())
-                   .mapToObj(nails::get)
-                   .collect(Collectors.toList());
+      this._leftToLeft = (List<Nail>) takeWhereFree(idx, true, true);
+      this._leftToRight = (List<Nail>) takeWhereFree(idx, true, false);
+      this._rightToLeft = (List<Nail>) takeWhereFree(idx, false, true);
+      this._rightToRight = (List<Nail>) takeWhereFree(idx, false, false);
+      System.out.println(idx);
     }
 
     @Override

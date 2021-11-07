@@ -1,13 +1,10 @@
 package nekogochan.stringart.usagelocal;
 
 import nekogochan.stringart.StringArt;
-import nekogochan.stringart.binds.BindsAllFree;
 import nekogochan.stringart.fn.Unchecked;
 import nekogochan.stringart.image.impl.ImageConverterImpl;
 import nekogochan.stringart.nail.Nail;
-import nekogochan.stringart.nail.NailImpl;
 import nekogochan.stringart.pair.Pair;
-import nekogochan.stringart.point.RectPoint;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -20,7 +17,6 @@ import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class Main {
@@ -41,11 +37,12 @@ public class Main {
   static int SAVE_PERIOD = 1000;
   static int NAILS_COUNT = 240;
 
-  static boolean RUN_TEST = true;
+  static boolean RUN_TEST = false;
 
   static int DRAW_WIDTH = (int) (WIDTH * DRAW_MP);
   static int DRAW_HEIGHT = (int) (HEIGHT * DRAW_MP);
 
+  // TODO (08.11.2021): исправить говно с кастами листов, поменять на PECS
   public static void main(String[] args) throws InterruptedException {
 //    var n1 = new NailImpl(new RectPoint(700.0, 300.0), 150.0);
 //    var n2 = new NailImpl(new RectPoint(300.0, 700.0), 50.0);
@@ -81,7 +78,9 @@ public class Main {
     HEIGHT = img.getHeight();
     DRAW_WIDTH = (int) (WIDTH * DRAW_MP);
     DRAW_HEIGHT = (int) (HEIGHT * DRAW_MP);
+    var time = System.currentTimeMillis();
     var nails = new BindsRect(NAILS_COUNT, WIDTH, HEIGHT, RADIUS).nails();
+    System.out.printf("nails generation: %s ms\n", System.currentTimeMillis() - time);
     var data = getData(img, WIDTH, HEIGHT);
     var stringArt = new StringArt(data, nails, REMOVE_VALUE);
 
@@ -94,7 +93,7 @@ public class Main {
 
     Supplier<BufferedImage> imageForShow = () -> new ImageConverterImpl(image).resize(WIDTH, HEIGHT).get();
 
-    var time = System.currentTimeMillis();
+    time = System.currentTimeMillis();
     for (int i = 1; i <= ITERATIONS; i++) {
       var pair = stringArt.next().pair();
       drawPath(gx, pair);
@@ -106,34 +105,21 @@ public class Main {
         saveImage(imageForShow.get(), SAVE_DIR.resolve(i + "_" + SOURCE));
       }
     }
-    System.out.println("time: " + (System.currentTimeMillis() - time));
+    System.out.println("draw time: " + (System.currentTimeMillis() - time));
 
     showResult(imageForShow.get());
     saveImage(image, SAVE_DIR.resolve(SOURCE));
   }
 
+  @SuppressWarnings("RedundantThrows")
   static void runTest() throws InterruptedException {
     var img = Unchecked.call(() -> ImageIO.read(SOURCE_PATH.toFile()));
     DRAW_MP = 1.0;
 
     var data = getData(img, 1000, 1000);
 
-//    var nails = new BindsRect(20, 1000, 1000, 50).nails();
-//    var nails = new BindsCircle(10, 500, 100).nails();
-
-    var nails = new BindsAllFree(
-      Map.of(100, 100,
-             200, 200,
-             400, 200,
-             567, 365,
-             886, 475,
-             734, 865,
-             123, 748,
-             178, 344)
-         .entrySet()
-         .stream()
-         .map(e -> new NailImpl(new RectPoint(e.getKey(), e.getValue()), 50))
-         .toList()).nails();
+    var nails = new BindsRect(20, 1000, 1000, 50).nails();
+//    var nails = new BindsCircle(100, 500, 10).nails();
 
     var stringArt = new StringArt(data, nails, 1.0);
 

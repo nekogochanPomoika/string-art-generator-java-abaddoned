@@ -1,6 +1,6 @@
 package nekogochan.stringart.image.impl;
 
-import nekogochan.stringart.fn.Fn;
+import nekogochan.stringart.fn.Generate;
 import nekogochan.stringart.image.GrayscaleConverter;
 import nekogochan.stringart.image.ImageConverter;
 import nekogochan.stringart.image.RGB;
@@ -18,16 +18,16 @@ public class RgbConverterImpl implements RgbConverter {
   }
 
   public static RgbConverterImpl fromImage(BufferedImage image) {
-    return new RgbConverterImpl(Fn.generateBIList(0, image.getWidth(),
-                                                  0, image.getHeight(),
-                                                  (x, y) -> RGB.ofPlain(image.getRGB(x, y))));
+    return new RgbConverterImpl(Generate.biList(0, image.getWidth(),
+                                                0, image.getHeight(),
+                                                (x, y) -> RGB.ofPlain(image.getRGB(x, y))));
   }
 
   @Override
   public RgbConverter map(MapOperator operator) {
-    data = Fn.generateBIList(0, data.size(),
-                             0, data.get(0).size(),
-                             (x, y) -> operator.apply(data.get(x).get(y), data, x, y));
+    data = Generate.biList(0, data.size(),
+                           0, data.get(0).size(),
+                           (x, y) -> operator.apply(data.get(x).get(y), data, x, y));
     return this;
   }
 
