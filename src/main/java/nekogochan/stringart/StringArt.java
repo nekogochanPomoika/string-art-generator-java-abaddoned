@@ -19,13 +19,13 @@ import java.util.concurrent.Future;
 public class StringArt {
 
   private final double[][] field;
-  private final List<BindNail> nails;
+  private final List<? extends BindNail> nails;
   private final double removeValue;
   private final Map<BindNail, Integer> indexes;
   private final ExecutorService executorService =
     Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-  public StringArt(double[][] field, List<BindNail> nails, double removeValue) {
+  public StringArt(double[][] field, List<? extends BindNail> nails, double removeValue) {
     this.field = field;
     this.nails = nails;
     this.removeValue = removeValue;

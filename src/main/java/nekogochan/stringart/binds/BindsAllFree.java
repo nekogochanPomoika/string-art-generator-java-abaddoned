@@ -19,20 +19,19 @@ import static nekogochan.stringart.fn.Fn.noneSame;
  * на размер поля 500 на 500 и 240 гвоздями по периметру занимет 5.5 минут
  */
 public class BindsAllFree {
-  private final List<BindNail> nails;
+  private final List<? extends BindNail> nails;
 
-  public List<BindNail> nails() {
+  public List<? extends BindNail> nails() {
     return nails;
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
   public BindsAllFree(List<? extends Nail> nails) {
     var _nails = nails.stream()
                       .map(_Nail::new)
                       .toList();
-    this.nails = (List<BindNail>) (List) _nails;
+    this.nails = _nails;
     var es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-    var tasks = new ArrayList<Future>();
+    var tasks = new ArrayList<Future<?>>();
     for (int i = 0; i < _nails.size(); i++) {
       int _i = i;
       tasks.add(es.submit(() -> _nails.get(_i).init(_i)));
@@ -65,7 +64,7 @@ public class BindsAllFree {
 
     private final Nail it;
 
-    private List<Nail>
+    private List<? extends Nail>
       _leftToLeft,
       _leftToRight,
       _rightToLeft,
@@ -75,32 +74,31 @@ public class BindsAllFree {
       this.it = it;
     }
 
-    @SuppressWarnings("unchecked")
     private void init(int idx) {
-      this._leftToLeft = (List<Nail>) takeWhereFree(idx, true, true);
-      this._leftToRight = (List<Nail>) takeWhereFree(idx, true, false);
-      this._rightToLeft = (List<Nail>) takeWhereFree(idx, false, true);
-      this._rightToRight = (List<Nail>) takeWhereFree(idx, false, false);
-      System.out.println(idx);
+      this._leftToLeft = takeWhereFree(idx, true, true);
+      this._leftToRight = takeWhereFree(idx, true, false);
+      this._rightToLeft = takeWhereFree(idx, false, true);
+      this._rightToRight = takeWhereFree(idx, false, false);
+      System.out.println("idx = " + idx);
     }
 
     @Override
-    public List<Nail> leftToLeft() {
+    public List<? extends Nail> leftToLeft() {
       return _leftToLeft;
     }
 
     @Override
-    public List<Nail> leftToRight() {
+    public List<? extends Nail> leftToRight() {
       return _leftToRight;
     }
 
     @Override
-    public List<Nail> rightToLeft() {
+    public List<? extends Nail> rightToLeft() {
       return _rightToLeft;
     }
 
     @Override
-    public List<Nail> rightToRight() {
+    public List<? extends Nail> rightToRight() {
       return _rightToRight;
     }
 

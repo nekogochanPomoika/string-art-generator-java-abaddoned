@@ -1,5 +1,7 @@
 package nekogochan.stringart.usagelocal;
 
+import nekogochan.stringart.BindsCircle;
+import nekogochan.stringart.BindsRect;
 import nekogochan.stringart.StringArt;
 import nekogochan.stringart.fn.Unchecked;
 import nekogochan.stringart.image.impl.ImageConverterImpl;
@@ -44,27 +46,6 @@ public class Main {
 
   // TODO (08.11.2021): исправить говно с кастами листов, поменять на PECS
   public static void main(String[] args) throws InterruptedException {
-//    var n1 = new NailImpl(new RectPoint(700.0, 300.0), 150.0);
-//    var n2 = new NailImpl(new RectPoint(300.0, 700.0), 50.0);
-//    var pair = n2.lookTo(n1, true, false);
-//    DRAW_MP = 1.0;
-//
-//    var img = Unchecked.call(() -> ImageIO.read(SOURCE_PATH.toFile()));
-//    var gx = initGx(img, 10.0f);
-//
-//    gx.setColor(Color.RED);
-//    drawNail(gx, n1);
-//    drawNail(gx, n2);
-//
-//    gx.setColor(Color.GREEN);
-//    drawPath(gx, pair);
-//
-//    pair = n1.lookTo(n2, true, true);
-//
-//    gx.setColor(Color.BLUE);
-//    drawPath(gx, pair);
-//    showImage(ImageUtil.copy(img));
-
     if (RUN_TEST) {
       runTest();
     } else {
@@ -76,10 +57,14 @@ public class Main {
     var img = Unchecked.call(() -> ImageIO.read(SOURCE_PATH.toFile()));
     WIDTH = img.getWidth();
     HEIGHT = img.getHeight();
+    var MAIN = Math.min(WIDTH, HEIGHT);
+    WIDTH = MAIN;
+    HEIGHT = MAIN;
     DRAW_WIDTH = (int) (WIDTH * DRAW_MP);
     DRAW_HEIGHT = (int) (HEIGHT * DRAW_MP);
     var time = System.currentTimeMillis();
-    var nails = new BindsRect(NAILS_COUNT, WIDTH, HEIGHT, RADIUS).nails();
+//    var nails = new BindsRect(NAILS_COUNT, WIDTH, HEIGHT, RADIUS).nails();
+    var nails = new BindsCircle(NAILS_COUNT, (MAIN / 2.0) - 1, RADIUS).nails();
     System.out.printf("nails generation: %s ms\n", System.currentTimeMillis() - time);
     var data = getData(img, WIDTH, HEIGHT);
     var stringArt = new StringArt(data, nails, REMOVE_VALUE);
