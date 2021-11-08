@@ -1,4 +1,4 @@
-package nekogochan.stringart;
+package nekogochan.stringart.binds;
 
 import nekogochan.stringart.binds.BindsAllFree;
 import nekogochan.stringart.nail.NailImpl;

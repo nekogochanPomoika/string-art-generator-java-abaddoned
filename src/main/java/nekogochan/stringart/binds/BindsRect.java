@@ -1,6 +1,5 @@
-package nekogochan.stringart;
+package nekogochan.stringart.binds;
 
-import nekogochan.stringart.binds.BindsAllFree;
 import nekogochan.stringart.nail.Nail;
 import nekogochan.stringart.nail.NailImpl;
 import nekogochan.stringart.point.RectPoint;
