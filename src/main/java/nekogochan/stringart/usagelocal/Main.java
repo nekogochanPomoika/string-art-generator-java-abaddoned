@@ -1,7 +1,7 @@
 package nekogochan.stringart.usagelocal;
 
-import nekogochan.stringart.BindsCircle;
-import nekogochan.stringart.BindsRect;
+import nekogochan.stringart.binds.BindsCircle;
+import nekogochan.stringart.binds.BindsRect;
 import nekogochan.stringart.StringArt;
 import nekogochan.stringart.fn.Unchecked;
 import nekogochan.stringart.image.impl.ImageConverterImpl;
