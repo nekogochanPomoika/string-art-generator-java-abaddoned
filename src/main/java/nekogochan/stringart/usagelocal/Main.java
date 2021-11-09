@@ -1,8 +1,8 @@
 package nekogochan.stringart.usagelocal;
 
+import nekogochan.stringart.StringArt;
 import nekogochan.stringart.binds.BindsCircle;
 import nekogochan.stringart.binds.BindsRect;
-import nekogochan.stringart.StringArt;
 import nekogochan.stringart.fn.Unchecked;
 import nekogochan.stringart.image.impl.ImageConverterImpl;
 import nekogochan.stringart.nail.Nail;
@@ -31,7 +31,7 @@ public class Main {
 
   static int WIDTH = 500;
   static int HEIGHT = 500;
-  static double RADIUS = 5.0;
+  static double RADIUS = 3.5;
   static double REMOVE_VALUE = 0.1;
   static double DRAW_MP = 7.0;
   static int ITERATIONS = 10000;
@@ -44,7 +44,6 @@ public class Main {
   static int DRAW_WIDTH = (int) (WIDTH * DRAW_MP);
   static int DRAW_HEIGHT = (int) (HEIGHT * DRAW_MP);
 
-  // TODO (08.11.2021): исправить говно с кастами листов, поменять на PECS
   public static void main(String[] args) throws InterruptedException {
     if (RUN_TEST) {
       runTest();
@@ -103,8 +102,8 @@ public class Main {
 
     var data = getData(img, 1000, 1000);
 
-    var nails = new BindsRect(20, 1000, 1000, 50).nails();
-//    var nails = new BindsCircle(100, 500, 10).nails();
+    var nails = new BindsRect(10, 1000, 1000, 90).nails();
+//    var nails = new BindsCircle(10, 500, 100).nails();
 
     var stringArt = new StringArt(data, nails, 1.0);
 

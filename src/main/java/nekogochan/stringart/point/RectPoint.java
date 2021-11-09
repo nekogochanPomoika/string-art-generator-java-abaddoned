@@ -31,8 +31,8 @@ public class RectPoint extends VecDouble<RectPoint> {
 
   public PolarPoint toPolar() {
     return new PolarPoint(
-        sqrt(pow(x(), 2) + pow(y(), 2)),
-        atan2(y(), x())
+      sqrt(pow(x(), 2) + pow(y(), 2)),
+      atan2(y(), x())
     );
   }
 
@@ -40,6 +40,7 @@ public class RectPoint extends VecDouble<RectPoint> {
     return new RectPointInt((int) x(),
                             (int) y());
   }
+
   public RectPoint copy() {
     return new RectPoint(x(), y());
   }
