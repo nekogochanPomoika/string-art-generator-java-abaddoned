@@ -52,17 +52,18 @@ public class BindsAllFree {
     var idx = new IntRef(0);
 
     _nails.forEach(
-      from -> tasks.add(es.submit(() -> {
-        _nails.stream()
-              .filter(to -> to != from)
-              .forEach(to -> {
-                bind(bindsMap, from, to, true, true);
-                bind(bindsMap, from, to, true, false);
-                bind(bindsMap, from, to, false, true);
-                bind(bindsMap, from, to, false, false);
-              });
-        System.out.println("idx = " + idx.getAndIncrement());
-      })));
+      from -> tasks.add(
+        es.submit(() -> {
+          _nails.stream()
+                .filter(to -> to != from)
+                .forEach(to -> {
+                  bind(bindsMap, from, to, true, true);
+                  bind(bindsMap, from, to, true, false);
+                  bind(bindsMap, from, to, false, true);
+                  bind(bindsMap, from, to, false, false);
+                });
+          System.out.println("idx = " + idx.getAndIncrement());
+        })));
 
     tasks.forEach(f -> Unchecked.call(f::get));
 

@@ -21,8 +21,8 @@ public class StringArt {
   private final double[][] field;
   private final List<? extends BindNail> nails;
   private final double removeValue;
-  private final Map<BindNail, Integer> indexes;
-  private final ExecutorService executorService =
+  private final Map<Nail, Integer> indexes;
+  private final ExecutorService es =
     Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
   public StringArt(double[][] field, List<? extends BindNail> nails, double removeValue) {
@@ -40,17 +40,17 @@ public class StringArt {
 
   public NextResult next() {
     var from = nails.get(fromIdx);
-    var iterationsResult = new ArrayList<Future<IterationResult>>();
+    var tasks = new ArrayList<Future<IterationResult>>();
 
     if (fromLeft) {
-      from.leftToLeft().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateLeft(n))));
-      from.leftToRight().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateRight(n))));
+      from.leftToLeft().forEach(n -> tasks.add(es.submit(() -> iterateLeft(n))));
+      from.leftToRight().forEach(n -> tasks.add(es.submit(() -> iterateRight(n))));
     } else {
-      from.rightToLeft().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateLeft(n))));
-      from.rightToRight().forEach(n -> iterationsResult.add(executorService.submit(() -> iterateRight(n))));
+      from.rightToLeft().forEach(n -> tasks.add(es.submit(() -> iterateLeft(n))));
+      from.rightToRight().forEach(n -> tasks.add(es.submit(() -> iterateRight(n))));
     }
 
-    var result = iterationsResult.stream()
+    var result = tasks.stream()
                                  .map(f -> Unchecked.call(f::get))
                                  .max(Comparator.comparingDouble(IterationResult::val))
                                  .orElseThrow();
