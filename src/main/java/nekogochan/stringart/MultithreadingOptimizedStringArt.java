@@ -2,7 +2,6 @@ package nekogochan.stringart;
 
 import nekogochan.stringart.binds.BindNail;
 import nekogochan.stringart.fn.Unchecked;
-import nekogochan.stringart.fn.ref.IntRef;
 import nekogochan.stringart.nail.Nail;
 import nekogochan.stringart.point.RectPointInt;
 
@@ -73,15 +72,19 @@ public class MultithreadingOptimizedStringArt implements StringArt {
 
   private IterationResult iterate(Nail to, boolean toLeft) {
     var from = nails.get(fromIdx);
-    var count = new IntRef(0);
-    var sum = from.lookTo(to, fromLeft, toLeft)
+    var avg = from.lookTo(to, fromLeft, toLeft)
                   .path()
                   .mapToDouble(this::getFieldValue)
-                  .reduce(0, (a, b) -> {
-                    count.increment();
-                    return a + b;
-                  });
-    return new IterationResult(to, toLeft, sum / count.get());
+                  .collect(() -> new double[2],
+                           (countAndSum, value) -> {
+                             countAndSum[0]++;
+                             countAndSum[1] += value;
+                           },
+                           (d1, d2) -> {
+                             d1[0] += d2[0];
+                             d1[1] += d2[1];
+                           });
+    return new IterationResult(to, toLeft, avg[1] / avg[0]);
   }
 
   private double getFieldValue(RectPointInt point) {
