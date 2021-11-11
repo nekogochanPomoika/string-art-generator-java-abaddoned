@@ -1,6 +1,6 @@
 package nekogochan.stringart.usagelocal;
 
-import nekogochan.stringart.StringArt;
+import nekogochan.stringart.MultithreadingOptimizedStringArt;
 import nekogochan.stringart.binds.BindsCircle;
 import nekogochan.stringart.binds.BindsRect;
 import nekogochan.stringart.fn.Unchecked;
@@ -21,7 +21,7 @@ import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
-public class Main {
+public class UsageLocal {
 
   static String SOURCE = "Gcpr8ZTEnVU.jpg";
 
@@ -66,7 +66,7 @@ public class Main {
     var nails = new BindsCircle(NAILS_COUNT, (MAIN / 2.0) - 1, RADIUS).nails();
     System.out.printf("nails generation: %s ms\n", System.currentTimeMillis() - time);
     var data = getData(img, WIDTH, HEIGHT);
-    var stringArt = new StringArt(data, nails, REMOVE_VALUE);
+    var stringArt = new MultithreadingOptimizedStringArt(data, nails, REMOVE_VALUE);
 
     var image = new BufferedImage(DRAW_WIDTH, DRAW_HEIGHT, BufferedImage.TYPE_INT_RGB);
     var gx = initGx(image, 0.0f);
@@ -105,7 +105,7 @@ public class Main {
     var nails = new BindsRect(10, 1000, 1000, 90).nails();
 //    var nails = new BindsCircle(10, 500, 100).nails();
 
-    var stringArt = new StringArt(data, nails, 1.0);
+    var stringArt = new MultithreadingOptimizedStringArt(data, nails, 1.0);
 
     var image = new BufferedImage(1000, 1000, BufferedImage.TYPE_INT_RGB);
     var gx = initGx(image, 3.0f);
@@ -133,7 +133,7 @@ public class Main {
   static double[][] getData(BufferedImage img, int width, int height) {
     return new ImageConverterImpl(img)
       .resizeCropping(width, height)
-      .proceed(Main::showImage)
+      .proceed(UsageLocal::showImage)
       .toRgb()
       .toGrayscale()
       .inverse()

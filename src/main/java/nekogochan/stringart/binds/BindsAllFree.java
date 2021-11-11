@@ -7,6 +7,8 @@ import nekogochan.stringart.nail.Nail;
 import nekogochan.stringart.pair.Pair;
 import nekogochan.stringart.point.RectPoint;
 import nekogochan.stringart.point.RectPointInt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +28,8 @@ import static nekogochan.stringart.fn.Fn.noneSame;
  * либо создавать на старте приложения и сохранять куда-нибудь
  */
 public class BindsAllFree {
+  private final static Logger log = LoggerFactory.getLogger(BindsAllFree.class);
+
   private final List<? extends BindNail> nails;
 
   public List<? extends BindNail> nails() {
@@ -62,7 +66,7 @@ public class BindsAllFree {
                   bind(bindsMap, from, to, false, true);
                   bind(bindsMap, from, to, false, false);
                 });
-          System.out.println("idx = " + idx.getAndIncrement());
+          log.info("initialized nail: {}", idx.getAndIncrement());
         })));
 
     tasks.forEach(f -> Unchecked.call(f::get));

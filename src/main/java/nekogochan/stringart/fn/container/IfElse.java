@@ -1,7 +1,5 @@
 package nekogochan.stringart.fn.container;
 
-import java.util.function.Consumer;
-
 public class IfElse<T> {
   private T _if;
   private T _else;
@@ -25,10 +23,5 @@ public class IfElse<T> {
     } else {
       _else = value;
     }
-  }
-
-  public void handleBoth(Consumer<T> consumer) {
-    consumer.accept(_if);
-    consumer.accept(_else);
   }
 }
