@@ -1,7 +1,7 @@
 package nekogochan.stringart.endpoint.model;
 
 import com.google.gson.Gson;
-import nekogochan.stringart.factory.Factory;
+import nekogochan.stringart.config.Factory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class EndpointData {
-  private static final Gson JSON = Factory.JSON();
+  private static final Gson JSON = Factory.Endpoint.JSON();
   private final Map<String, String> data;
 
   public EndpointData(Map<String, String> data) {

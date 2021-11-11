@@ -4,6 +4,8 @@ import nekogochan.stringart.pair.Pair;
 import nekogochan.stringart.pair.PairImpl;
 import nekogochan.stringart.point.RectPoint;
 
+import java.util.Objects;
+
 import static java.lang.Math.PI;
 import static java.lang.Math.acos;
 import static java.lang.Math.asin;
@@ -116,5 +118,18 @@ public class NailImpl implements Nail {
     var p2 = c2.copy().subtract(dxy2);
 
     return new PairImpl(p1.toInt(), p2.toInt());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    NailImpl nail = (NailImpl) o;
+    return Double.compare(nail.radius, radius) == 0 && Objects.equals(center, nail.center);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(center, radius);
   }
 }

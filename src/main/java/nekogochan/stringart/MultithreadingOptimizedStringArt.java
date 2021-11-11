@@ -20,8 +20,7 @@ public class MultithreadingOptimizedStringArt implements StringArt {
   private final List<? extends BindNail> nails;
   private final double removeValue;
   private final Map<Nail, Integer> indexes;
-  private final ExecutorService es =
-    Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+  private final ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
   public MultithreadingOptimizedStringArt(double[][] field, List<? extends BindNail> nails, double removeValue) {
     this.field = field;

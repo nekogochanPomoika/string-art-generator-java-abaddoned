@@ -4,7 +4,7 @@ import com.google.gson.JsonParseException;
 import io.vavr.control.Try;
 import nekogochan.stringart.endpoint.client.ClientHandler;
 import nekogochan.stringart.endpoint.model.EndpointData;
-import nekogochan.stringart.factory.Factory;
+import nekogochan.stringart.config.Factory;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -13,6 +13,13 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
+
+import static nekogochan.stringart.endpoint.EndpointMethods.DATA;
+import static nekogochan.stringart.endpoint.EndpointMethods.METHOD;
+import static nekogochan.stringart.endpoint.EndpointMethods.Server.DONT_UNDERSTAND;
+import static nekogochan.stringart.endpoint.EndpointMethods.Server.HANDLE;
+import static nekogochan.stringart.endpoint.EndpointMethods.Server.INVALID_DATA;
+import static nekogochan.stringart.endpoint.EndpointMethods.Server.INVALID_DATA_FORMAT;
 
 public class StringArtEndpoint extends WebSocketServer {
   private static final Logger log = LoggerFactory.getLogger(StringArtEndpoint.class);
@@ -39,25 +46,25 @@ public class StringArtEndpoint extends WebSocketServer {
   @Override
   public void onMessage(WebSocket conn, String message) {
     var data = new EndpointData(message);
-    data.optional("method")
+    data.optional(METHOD)
         .ifPresentOrElse(method -> onMethod(conn, method, data),
-                         () -> conn.close(4000, "dont_understand"));
+                         () -> conn.close(4000, DONT_UNDERSTAND));
   }
 
   private void onMethod(WebSocket conn, String method, EndpointData data) {
-    if ("handle".equals(method)) {
-      Try.of(() -> data.optional("data", double[][].class))
+    if (method.equals(HANDLE)) {
+      Try.of(() -> data.optional(DATA, double[][].class))
          .onFailure(JsonParseException.class, (ex) -> onJsonParseError(conn, ex))
          .onSuccess(imageData -> imageData.flatMap(this::toEmptyIfInvalid)
                                           .ifPresentOrElse(d -> onHandle(conn, d),
-                                                           () -> conn.close(4000, "invalid_data")));
+                                                           () -> conn.close(4000, INVALID_DATA)));
     } else {
-      conn.close(4000, "dont_understand");
+      conn.close(4000, DONT_UNDERSTAND);
     }
   }
 
   private void onHandle(WebSocket conn, double[][] data) {
-    clientHandler.handle(conn, Factory.stringArt(data));
+    clientHandler.handle(conn, Factory.Model.stringArt(data));
   }
 
   private Optional<double[][]> toEmptyIfInvalid(double[][] data) {
@@ -75,7 +82,7 @@ public class StringArtEndpoint extends WebSocketServer {
 
   private void onJsonParseError(WebSocket conn, JsonParseException ex) {
     log.error("client send invalid data: {} {}", conn.getRemoteSocketAddress(), ex);
-    conn.close(4000, "invalid_data_format");
+    conn.close(4000, INVALID_DATA_FORMAT);
   }
 
   @Override

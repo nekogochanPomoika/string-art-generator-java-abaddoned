@@ -1,6 +1,6 @@
 package nekogochan.stringart;
 
-import nekogochan.stringart.factory.Factory;
+import nekogochan.stringart.config.Factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +9,7 @@ public class Main {
 
   public static void main(String[] args) {
     log.info("Application started");
-    var server = Factory.stringArtEndpoint();
+    var server = Factory.Endpoint.stringArtEndpoint();
     server.start();
   }
 }

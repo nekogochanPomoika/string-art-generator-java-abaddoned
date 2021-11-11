@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 
 public class ClientSocket implements WebSocket {
-  WebSocket it;
+  private final WebSocket it;
 
   public ClientSocket(WebSocket it) {
     this.it = it;

@@ -1,8 +1,8 @@
 package nekogochan.stringart.usagelocal;
 
 import nekogochan.stringart.MultithreadingOptimizedStringArt;
-import nekogochan.stringart.binds.BindsCircle;
 import nekogochan.stringart.binds.BindsRect;
+import nekogochan.stringart.config.Factory;
 import nekogochan.stringart.fn.Unchecked;
 import nekogochan.stringart.image.impl.ImageConverterImpl;
 import nekogochan.stringart.nail.Nail;
@@ -29,15 +29,12 @@ public class UsageLocal {
   static Path SOURCE_PATH = DESKTOP.resolve(SOURCE);
   static Path SAVE_DIR = DESKTOP.resolve("result");
 
-  static int WIDTH = 500;
-  static int HEIGHT = 500;
-  static double RADIUS = 3.5;
-  static double REMOVE_VALUE = 0.1;
+  static int WIDTH = Factory.Config.field().fieldWidth();
+  static int HEIGHT = WIDTH;
   static double DRAW_MP = 7.0;
   static int ITERATIONS = 10000;
   static int SHOW_PERIOD = 500;
   static int SAVE_PERIOD = 1000;
-  static int NAILS_COUNT = 240;
 
   static boolean RUN_TEST = false;
 
@@ -54,30 +51,15 @@ public class UsageLocal {
 
   static void runMain() {
     var img = Unchecked.call(() -> ImageIO.read(SOURCE_PATH.toFile()));
-    WIDTH = img.getWidth();
-    HEIGHT = img.getHeight();
-    var MAIN = Math.min(WIDTH, HEIGHT);
-    WIDTH = MAIN;
-    HEIGHT = MAIN;
-    DRAW_WIDTH = (int) (WIDTH * DRAW_MP);
-    DRAW_HEIGHT = (int) (HEIGHT * DRAW_MP);
-    var time = System.currentTimeMillis();
-//    var nails = new BindsRect(NAILS_COUNT, WIDTH, HEIGHT, RADIUS).nails();
-    var nails = new BindsCircle(NAILS_COUNT, (MAIN / 2.0) - 1, RADIUS).nails();
-    System.out.printf("nails generation: %s ms\n", System.currentTimeMillis() - time);
     var data = getData(img, WIDTH, HEIGHT);
-    var stringArt = new MultithreadingOptimizedStringArt(data, nails, REMOVE_VALUE);
+    var stringArt = Factory.Model.stringArt(data);
 
     var image = new BufferedImage(DRAW_WIDTH, DRAW_HEIGHT, BufferedImage.TYPE_INT_RGB);
     var gx = initGx(image, 0.0f);
 
-    gx.setColor(Color.GRAY);
-    nails.forEach(n -> drawNail(gx, n));
-    gx.setColor(Color.BLACK);
-
     Supplier<BufferedImage> imageForShow = () -> new ImageConverterImpl(image).resize(WIDTH, HEIGHT).get();
 
-    time = System.currentTimeMillis();
+    var time = System.currentTimeMillis();
     for (int i = 1; i <= ITERATIONS; i++) {
       var pair = stringArt.next().pair();
       drawPath(gx, pair);

@@ -4,8 +4,6 @@ import nekogochan.stringart.fn.Unchecked;
 import nekogochan.stringart.fn.container.IfElse;
 import nekogochan.stringart.fn.ref.IntRef;
 import nekogochan.stringart.nail.Nail;
-import nekogochan.stringart.pair.Pair;
-import nekogochan.stringart.point.RectPoint;
 import nekogochan.stringart.point.RectPointInt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +35,9 @@ public class BindsAllFree {
   }
 
   public BindsAllFree(List<? extends Nail> nails) {
-    var _nails = nails.stream().map(_Nail::new).toList();
+    var _nails = nails.stream().map(StandardBindNail::new).toList();
 
-    Map<_Nail, IfElse<IfElse<Map<_Nail, Boolean>>>> bindsMap =
+    Map<StandardBindNail, IfElse<IfElse<Map<StandardBindNail, Boolean>>>> bindsMap =
       _nails.stream()
             .collect(Collectors.toMap(
               n -> n,
@@ -71,7 +69,7 @@ public class BindsAllFree {
 
     tasks.forEach(f -> Unchecked.call(f::get));
 
-    _nails.forEach(n -> n.init(
+    _nails.forEach(n -> n.bind(
       getFree(bindsMap, n, true, true),
       getFree(bindsMap, n, true, false),
       getFree(bindsMap, n, false, true),
@@ -79,10 +77,12 @@ public class BindsAllFree {
     ));
 
     this.nails = _nails;
+
+    es.shutdown();
   }
 
-  private static void bind(Map<_Nail, IfElse<IfElse<Map<_Nail, Boolean>>>> bindsMap,
-                           _Nail from, _Nail to, boolean fromLeft, boolean toLeft) {
+  private static void bind(Map<StandardBindNail, IfElse<IfElse<Map<StandardBindNail, Boolean>>>> bindsMap,
+                           StandardBindNail from, StandardBindNail to, boolean fromLeft, boolean toLeft) {
     var bind = bindsMap.get(from).get(fromLeft).get(toLeft).get(to);
     if (bind == null) {
       var value = isFree(bindsMap.keySet(), from, to, fromLeft, toLeft);
@@ -99,8 +99,8 @@ public class BindsAllFree {
                                     .anyMatch(p -> isIn(p, n)));
   }
 
-  private static List<_Nail> getFree(Map<_Nail, IfElse<IfElse<Map<_Nail, Boolean>>>> bindsMap,
-                                     _Nail from, boolean fromLeft, boolean toLeft) {
+  private static List<StandardBindNail> getFree(Map<StandardBindNail, IfElse<IfElse<Map<StandardBindNail, Boolean>>>> bindsMap,
+                                     StandardBindNail from, boolean fromLeft, boolean toLeft) {
     return bindsMap.get(from).get(fromLeft).get(toLeft).entrySet().stream()
                    .filter(Map.Entry::getValue)
                    .map(Map.Entry::getKey)
@@ -113,61 +113,4 @@ public class BindsAllFree {
                       p.y() - c.y()) <= nail.radius();
   }
 
-  private static class _Nail implements BindNail {
-    final Nail it;
-    List<_Nail>
-      leftToLeft,
-      leftToRight,
-      rightToLeft,
-      rightToRight;
-
-    _Nail(Nail it) {
-      this.it = it;
-    }
-
-    void init(List<_Nail> leftToLeft,
-              List<_Nail> leftToRight,
-              List<_Nail> rightToLeft,
-              List<_Nail> rightToRight) {
-      this.leftToLeft = leftToLeft;
-      this.leftToRight = leftToRight;
-      this.rightToLeft = rightToLeft;
-      this.rightToRight = rightToRight;
-    }
-
-    @Override
-    public RectPoint center() {
-      return it.center();
-    }
-
-    @Override
-    public double radius() {
-      return it.radius();
-    }
-
-    @Override
-    public Pair lookTo(Nail nail, boolean fromLeft, boolean toLeft) {
-      return it.lookTo(nail, fromLeft, toLeft);
-    }
-
-    @Override
-    public List<? extends Nail> leftToLeft() {
-      return leftToLeft;
-    }
-
-    @Override
-    public List<? extends Nail> leftToRight() {
-      return leftToRight;
-    }
-
-    @Override
-    public List<? extends Nail> rightToLeft() {
-      return rightToLeft;
-    }
-
-    @Override
-    public List<? extends Nail> rightToRight() {
-      return rightToRight;
-    }
-  }
 }

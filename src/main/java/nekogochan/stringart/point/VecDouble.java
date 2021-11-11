@@ -1,5 +1,7 @@
 package nekogochan.stringart.point;
 
+import java.util.Objects;
+
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class VecDouble<It extends VecDouble<It>> {
   protected double _1;
@@ -23,5 +25,18 @@ public abstract class VecDouble<It extends VecDouble<It>> {
 
   public It add(VecDouble vec) {
     return add(vec._1, vec._2);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    VecDouble<?> vecDouble = (VecDouble<?>) o;
+    return Double.compare(vecDouble._1, _1) == 0 && Double.compare(vecDouble._2, _2) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(_1, _2);
   }
 }

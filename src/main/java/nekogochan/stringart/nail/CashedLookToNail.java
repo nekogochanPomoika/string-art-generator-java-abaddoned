@@ -6,6 +6,7 @@ import nekogochan.stringart.point.RectPoint;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CashedLookToNail implements Nail {
   private final Nail it;
@@ -24,7 +25,7 @@ public class CashedLookToNail implements Nail {
     return it.radius();
   }
 
-  Map<Nail, IfElse<IfElse<Pair>>> cash = new HashMap<>();
+  private final Map<Nail, IfElse<IfElse<Pair>>> cash = new HashMap<>();
 
   @Override
   public Pair lookTo(Nail nail, boolean fromLeft, boolean toLeft) {
@@ -42,5 +43,18 @@ public class CashedLookToNail implements Nail {
     }
 
     return value;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    CashedLookToNail that = (CashedLookToNail) o;
+    return Objects.equals(it, that.it) && Objects.equals(cash, that.cash);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(it, cash);
   }
 }
