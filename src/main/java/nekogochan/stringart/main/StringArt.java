@@ -1,4 +1,4 @@
-package nekogochan.stringart;
+package nekogochan.stringart.main;
 
 import nekogochan.stringart.pair.Pair;
 

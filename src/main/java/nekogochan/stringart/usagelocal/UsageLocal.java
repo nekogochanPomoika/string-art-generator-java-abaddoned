@@ -1,6 +1,6 @@
 package nekogochan.stringart.usagelocal;
 
-import nekogochan.stringart.MultithreadingOptimizedStringArt;
+import nekogochan.stringart.main.MultithreadingOptimizedStringArt;
 import nekogochan.stringart.binds.BindsRect;
 import nekogochan.stringart.config.Factory;
 import nekogochan.stringart.fn.Unchecked;

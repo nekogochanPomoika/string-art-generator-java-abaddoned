@@ -1,17 +1,17 @@
 package nekogochan.stringart.endpoint.client;
 
-import nekogochan.stringart.StringArt;
+import nekogochan.stringart.main.StringArt;
 import nekogochan.stringart.endpoint.StringArtHandler;
 import nekogochan.stringart.endpoint.model.EndpointData;
 import nekogochan.stringart.endpoint.socket.ClientSocket;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 
-import static nekogochan.stringart.endpoint.EndpointMethods.Client.END;
-import static nekogochan.stringart.endpoint.EndpointMethods.Client.HANDLING;
-import static nekogochan.stringart.endpoint.EndpointMethods.Client.PROGRESS;
-import static nekogochan.stringart.endpoint.EndpointMethods.DATA;
-import static nekogochan.stringart.endpoint.EndpointMethods.METHOD;
+import static nekogochan.stringart.config.EndpointMethods.Client.END;
+import static nekogochan.stringart.config.EndpointMethods.Client.HANDLING;
+import static nekogochan.stringart.config.EndpointMethods.Client.PROGRESS;
+import static nekogochan.stringart.config.EndpointMethods.DATA;
+import static nekogochan.stringart.config.EndpointMethods.METHOD;
 
 public class SingleClientHandler implements ClientHandler {
 

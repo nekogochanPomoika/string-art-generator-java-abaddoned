@@ -1,6 +1,6 @@
 package nekogochan.stringart.endpoint;
 
-import nekogochan.stringart.StringArt;
+import nekogochan.stringart.main.StringArt;
 
 import java.util.ArrayList;
 import java.util.List;

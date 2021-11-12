@@ -1,8 +1,8 @@
 package nekogochan.stringart.config;
 
 import com.google.gson.Gson;
-import nekogochan.stringart.MultithreadingOptimizedStringArt;
-import nekogochan.stringart.StringArt;
+import nekogochan.stringart.main.MultithreadingOptimizedStringArt;
+import nekogochan.stringart.main.StringArt;
 import nekogochan.stringart.binds.BindNail;
 import nekogochan.stringart.binds.BindsCircle;
 import nekogochan.stringart.endpoint.StringArtEndpoint;

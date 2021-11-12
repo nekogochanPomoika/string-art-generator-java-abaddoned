@@ -1,4 +1,4 @@
-package nekogochan.stringart;
+package nekogochan.stringart.main;
 
 import nekogochan.stringart.binds.BindNail;
 import nekogochan.stringart.fn.Unchecked;

@@ -1,4 +1,4 @@
-package nekogochan.stringart.endpoint;
+package nekogochan.stringart.config;
 
 public class EndpointMethods {
 

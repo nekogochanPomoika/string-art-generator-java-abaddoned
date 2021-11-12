@@ -1,6 +1,6 @@
 package nekogochan.stringart.endpoint.client;
 
-import nekogochan.stringart.StringArt;
+import nekogochan.stringart.main.StringArt;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 

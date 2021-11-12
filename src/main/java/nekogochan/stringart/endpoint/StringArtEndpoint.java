@@ -14,12 +14,12 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
-import static nekogochan.stringart.endpoint.EndpointMethods.DATA;
-import static nekogochan.stringart.endpoint.EndpointMethods.METHOD;
-import static nekogochan.stringart.endpoint.EndpointMethods.Server.DONT_UNDERSTAND;
-import static nekogochan.stringart.endpoint.EndpointMethods.Server.HANDLE;
-import static nekogochan.stringart.endpoint.EndpointMethods.Server.INVALID_DATA;
-import static nekogochan.stringart.endpoint.EndpointMethods.Server.INVALID_DATA_FORMAT;
+import static nekogochan.stringart.config.EndpointMethods.DATA;
+import static nekogochan.stringart.config.EndpointMethods.METHOD;
+import static nekogochan.stringart.config.EndpointMethods.Server.DONT_UNDERSTAND;
+import static nekogochan.stringart.config.EndpointMethods.Server.HANDLE;
+import static nekogochan.stringart.config.EndpointMethods.Server.INVALID_DATA;
+import static nekogochan.stringart.config.EndpointMethods.Server.INVALID_DATA_FORMAT;
 
 public class StringArtEndpoint extends WebSocketServer {
   private static final Logger log = LoggerFactory.getLogger(StringArtEndpoint.class);
